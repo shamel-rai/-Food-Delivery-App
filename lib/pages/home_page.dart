@@ -1,15 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recipe_app/components/my_current_location.dart';
 import 'package:recipe_app/components/my_description_box.dart';
 import 'package:recipe_app/components/my_drawer.dart';
 import 'package:recipe_app/components/my_silver_app_bar.dart';
+import 'package:recipe_app/components/my_tab_bar.dart';
+import 'package:recipe_app/models/food.dart';
+import 'package:recipe_app/models/restaurant.dart';
 
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      length: FoodCategory.values.length,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  // Sort out and return a list of food items that belong to a specific category
+  List<Food> _filtermethodByCategory(
+    FoodCategory category,
+    List<Food> fullMenu,
+  ) {
+    return fullMenu.where((food) => food.category == category).toList();
+  }
+
+  // return list of foods in the given category
+  List<Widget> getFoodInThisCategory(List<Food> fullMenu) {
+    return FoodCategory.values.map((category) {
+      List<Food> categoryMenu = _filtermethodByCategory(category, fullMenu);
+      return ListView.builder(
+        itemCount: categoryMenu.length,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return ListTile(title: Text(categoryMenu[index].name));
+        },
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,10 +80,15 @@ class _HomePageState extends State<HomePage> {
                 MyDescriptionBox(),
               ],
             ),
-            title: Text("Title"),
+            title: MyTabBar(tabController: _tabController),
           ),
         ],
-        body: Container(color: Colors.blue),
+        body: Consumer<Restaurant>(
+          builder: (context, restaurant, child) => TabBarView(
+            controller: _tabController,
+            children: getFoodInThisCategory(restaurant.menu),
+          ),
+        ),
       ),
     );
   }
