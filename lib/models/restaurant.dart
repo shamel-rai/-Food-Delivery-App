@@ -50,7 +50,7 @@ class Restaurant extends ChangeNotifier {
     Food(
       name: "Red Velvet with fruits",
       description: "Some Kind of Red Pastery",
-      imagePath: "assets/desserts/dessert_Two.jpg",
+      imagePath: "assets/desserts/dessert_two.jpg",
       price: 9,
       category: FoodCategory.desserts,
       availableAddons: [Addon(name: "Fruits", price: 6)],

@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:recipe_app/components/my_current_location.dart';
 import 'package:recipe_app/components/my_description_box.dart';
 import 'package:recipe_app/components/my_drawer.dart';
+import 'package:recipe_app/components/my_food_tile.dart';
 import 'package:recipe_app/components/my_silver_app_bar.dart';
 import 'package:recipe_app/components/my_tab_bar.dart';
 import 'package:recipe_app/models/food.dart';
 import 'package:recipe_app/models/restaurant.dart';
+import 'package:recipe_app/pages/food_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -46,8 +48,21 @@ class _HomePageState extends State<HomePage>
       return ListView.builder(
         itemCount: categoryMenu.length,
         physics: NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
-          return ListTile(title: Text(categoryMenu[index].name));
+          // get individual food
+          final food = categoryMenu[index];
+
+          // return the food tille UI
+          return MyFoodTile(
+            food: food,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FoodPage(food: food)),
+              );
+            },
+          );
         },
       );
     }).toList();
