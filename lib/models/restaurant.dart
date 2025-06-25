@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:recipe_app/models/cart_item.dart';
 import 'package:recipe_app/models/food.dart';
 
 class Restaurant extends ChangeNotifier {
@@ -70,13 +72,81 @@ class Restaurant extends ChangeNotifier {
 
   // Getters
   List<Food> get menu => _menu;
+  List<CartItem> get cart => _cart;
 
   // Operation
+  // User cart
+  List<CartItem> _cart = [];
+
   // 1. add to the cart
+  void addToCart(Food food, List<Addon> selectedAddons) {
+    // see if there is a cart item already with th esame food and selected addons
+    CartItem? cartItem = _cart.firstWhereOrNull((item) {
+      // check if the food items are the same
+      bool isSameFood = item.food == food;
+      // check if the list of selected addons are the same
+      bool isSameAddons = ListEquality().equals(
+        item.selectedAddons,
+        selectedAddons,
+      );
+      return isSameAddons && isSameAddons;
+    });
+
+    //if the item is already there, increase its quantity
+    if (cartItem != null) {
+      cartItem.quantity++;
+    }
+    // otherwise add new cart item to the cart
+    else {
+      _cart.add(CartItem(food: food, selectedAddons: selectedAddons));
+    }
+    notifyListeners();
+  }
+
   // 2. Remove from the cart
+  void removeFromCart(CartItem cartItem) {
+    int cartIndex = _cart.indexOf(cartItem);
+
+    if (cartIndex != -1) {
+      if (_cart[cartIndex].quantity > 1) {
+        _cart[cartIndex].quantity--;
+      } else {
+        _cart.removeAt(cartIndex);
+      }
+    }
+    notifyListeners();
+  }
+
   // 3. tottal price of the cart
+  double getTotalPrice() {
+    double totalPrice = 0.0;
+    for (CartItem cartItem in _cart) {
+      double itemTotal = cartItem.food.price;
+
+      for (Addon addon in cartItem.selectedAddons) {
+        itemTotal += addon.price;
+      }
+      totalPrice += itemTotal * cartItem.quantity;
+    }
+    return totalPrice;
+  }
+
   // 4. total number of itesm in the cart
+  int getTotalItemCart() {
+    int totalItem = 0;
+
+    for (CartItem cartItem in _cart) {
+      totalItem += cartItem.quantity;
+    }
+
+    return totalItem;
+  }
+
   // 5. clear the cart
+  void clearCart() {
+    _cart.clear();
+    notifyListeners();
+  }
 
   // Helpers
   // 1.Generate the Receipt
