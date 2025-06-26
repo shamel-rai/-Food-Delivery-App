@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:recipe_app/components/my_button.dart';
 import 'package:recipe_app/components/my_card_tile.dart';
 import 'package:recipe_app/models/restaurant.dart';
+import 'package:recipe_app/pages/payment_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -80,7 +81,15 @@ class CartPage extends StatelessWidget {
               ),
 
               // Buttton to pay
-              MyButton(onTap: () {}, text: "Goto Checkout"),
+              MyButton(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PaymentPage()),
+                  );
+                },
+                text: "Goto Checkout",
+              ),
               SizedBox(height: 25),
             ],
           ),
